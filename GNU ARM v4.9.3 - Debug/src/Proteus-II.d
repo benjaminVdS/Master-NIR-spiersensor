@@ -51,6 +51,7 @@ src/Proteus-II.o: ../src/Proteus-II.c \
  c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_assert.h \
  c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_cmu.h \
  c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_emu.h \
+ ../src/PWM_LED.h \
  c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_leuart.h \
  ../src/Proteus-II.h \
  D:\Users\Benjamin\SimplicityStudio\v4_workspace\SLSTK3400A_blink_3\dbprint/debug_dbprint.h \
@@ -162,6 +163,8 @@ c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\pla
 c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_cmu.h:
 
 c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_emu.h:
+
+../src/PWM_LED.h:
 
 c:\siliconlabs\simplicitystudio\v4_2_3_4\developer\sdks\gecko_sdk_suite\v2.5\platform\emlib\inc\em_leuart.h:
 

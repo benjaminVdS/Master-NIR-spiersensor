@@ -40,6 +40,7 @@ uint32_t counterI2C = 0;
 bool StartConnection = true;
 bool PWM_Enabled = false;
 bool dataChannelOpen = false;
+bool getTemp = true;
 /* GLOBAL VARIABLES */
 volatile uint32_t msTicks; /* counts 1ms timeTicks */
 uint32_t leuartif;
@@ -165,8 +166,6 @@ void RTC_IRQHandler(void){ // Interrupt handler om de 8µS om data van I2C in te 
 			RTC_CompareSet(0,RTC_COUNT_BETWEEN_WAKEUP );//RTC_COUNT_BETWEEN_WAKEUP = 16.459mS
 			PWM_Enabled = isPWMNeeded(); // Check if PWM is needed or not. Set RTC_Clock depending on it!
 			if (PWM_Enabled) RTC_CompareSet(0,RTC_COUNT_BETWEEN_WAKEUP_PWM ); // 0.5mS
-			// Set power to sensors
-			// .....
 			StartConnection=false;
 		}
 
@@ -250,7 +249,7 @@ int main(void)
     //Enable RTC clock
 	CMU_ClockEnable(cmuClock_RTC, true);
 	CMU_ClockEnable(cmuClock_GPIO, true);
- 	//Setup-rtc voor elke 4s data door te sturen.
+ 	//Setup-rtc voor elke 4s data door te sturen, elke s wakker worden.
 	RTC_setup();
     //Initialize the low-energy-UART
 	initLEUART();
@@ -268,6 +267,7 @@ int main(void)
  	initiateBLE();
  	SetPowerBLE(true);
  	SetPowerSensors(false);
+ 	setTemperaturesensor();
 /* Infinite loop */
 //char LengthPayload243[2] = {0xF3,0x00} ;
 while (1) {
@@ -295,6 +295,10 @@ while (1) {
 			uint8_t rBufferTemp[3];
 			if(counterCH0 <= 239) { // place 241,242 reserved for battery Voltage or T-sensor. Depending on the channel.
 				if(setCH){ // Read CH0
+					if(getTemp){
+						getTempData();
+						getTemp=false;
+					}
 					/*Read data in from NIR-sensor*/ // CH0
 					i2cError=I2C_WriteReadBuffer(EEPROM_I2C_ADDR <<1 , wBufferTemp, 1, rBufferTemp, 3);//R CH0
 					if(i2cError){
@@ -352,7 +356,7 @@ while (1) {
 			break;
 
 		case SendDataTemp: // 241 & 242 fill with data
-			getTempData();
+			getTemp=true;
 			mode = SendDataBLE;
 			break;
 		//default:
@@ -361,6 +365,14 @@ while (1) {
 
 
 }
+void setTemperaturesensor(){
+	uint8_t wBuff[2];
+	/*Set Tidle register to 3.2S*/
+	wBuff[0]=0b00000100; // Address = 04
+	wBuff[1]=0b00011111; // MAX van 3.2 S
+	i2cError=I2C_WriteBuffer(TSENSOR_I2C_ADDR <<1 , wBuff, 2);
+}
+
 void getTempData(){
 //TSENSOR_I2C_ADDR
 	uint8_t wBuff[2];
@@ -375,15 +387,6 @@ void getTempData(){
 	dbprintln("T-sensor: ");
 	dbprintInt((int)Temperature);
 #endif /* DEBUG_DBPRINT */
-	//wBuff[0] = 1;
-	/*Read data in from NIR-sensor*/
-	/*i2cError=I2C_WriteReadBuffer(TSENSOR_I2C_ADDR <<1 , wBuff, 1, rBuff, 1);
-	wBuff[0] = 4;*/
-	/*Read data in from NIR-sensor*/
-	/*i2cError=I2C_WriteReadBuffer(TSENSOR_I2C_ADDR <<1 , wBuff, 1, rBuff, 1);
-	wBuff[1]=0b00011111;
-	i2cError=I2C_WriteBuffer(TSENSOR_I2C_ADDR <<1 , wBuff, 2);*/
-
 }
 void setConversie(){
 	if (oneShotConversion){
